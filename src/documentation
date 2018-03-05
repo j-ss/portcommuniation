@@ -1,0 +1,4 @@
+To connect serial port download comm.jar from oracle.
+put it into jdk/jre/lib/ext folder
+copy javax.comm.properties file in jdk/jre/lib/ext and jdk/lib
+copy libLinuxSerialParallel.so file in jdk/jre/lib/i386
