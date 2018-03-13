@@ -8,6 +8,8 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.TooManyListenersException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.comm.CommPortIdentifier;
 import javax.comm.PortInUseException;
 import javax.comm.SerialPort;
@@ -16,12 +18,13 @@ import javax.comm.UnsupportedCommOperationException;
 public class SerialPortCom {
 
   private static Enumeration<CommPortIdentifier> list;
-  private static ArrayList<CommPortIdentifier> serialPortList;
+  private static ArrayList<CommPortIdentifier> serialPortList=new ArrayList<>();
   private static SerialPort serialPort;
   private static CommPortIdentifier commPort;
   private static BufferedReader reader;
   private static InputStream inputStream;
   private static OutputStream outputStream;
+  private static Logger logger=Logger.getLogger("SerialPortCom");
   public static void main(String[] args) throws IOException {
 
     checkAvailablePort();        //This method check the available communication port in system
@@ -35,7 +38,7 @@ public class SerialPortCom {
       }
     }
     serialPortList.forEach(action->System.out.println(action.getName()));
-    System.out.println("enter serial port whom you want to connect");
+    System.out.println("enter serial port whom you want to connect");   //This println take port name form user whom he want to connect
     reader=new BufferedReader(new InputStreamReader(System.in));
     String port=reader.readLine();  //Take serial port from user whom he want to connect
     connect(port);                  //connect to port
@@ -63,22 +66,22 @@ public class SerialPortCom {
     serialPortList.forEach(action->{
       if(action.getName().equals(port)){
         commPort=action;
-        System.out.println("connecting to port..." + commPort.getName());
+        logger.log(Level.WARNING,"connecting to port..." + commPort.getName());
       }
     });
     try{
       if(commPort==null){
-        System.out.println("enter a valid port name");
+        logger.log(Level.WARNING,"enter a valid port name");
         try {
           String name=reader.readLine();
           connect(name);
         } catch (IOException e) {
-          System.out.println("error in taking port name "+e.getMessage());
+          logger.log(Level.WARNING,"error in taking port name "+e.getMessage());
         }
       }
       serialPort=(SerialPort)commPort.open("serialportcommunication",1000);
     }catch (PortInUseException e){
-      System.out.println("port not open "+e.getMessage());
+      logger.log(Level.WARNING,"port not open "+e.getMessage());
     }
   }
 
@@ -90,7 +93,7 @@ public class SerialPortCom {
       inputStream = serialPort.getInputStream();
       outputStream = serialPort.getOutputStream();
     }catch (IOException e){
-      System.out.println("error in opening stream"+e.getMessage());
+      logger.log(Level.WARNING,"error in opening stream"+e.getMessage());
     }
   }
 
@@ -102,7 +105,7 @@ public class SerialPortCom {
     try{
       serialPort.addEventListener(new EventHandling(inputStream));
     }catch (TooManyListenersException e){
-      System.out.println(e.getMessage());
+      logger.log(Level.WARNING,e.getMessage());
     }
     serialPort.notifyOnDataAvailable(true);
     try{
@@ -110,7 +113,7 @@ public class SerialPortCom {
       serialPort.setSerialPortParams(5000,SerialPort.DATABITS_8,
           SerialPort.STOPBITS_1,SerialPort.PARITY_NONE);
     }catch (UnsupportedCommOperationException e){
-      System.out.println(e.getMessage());
+      logger.log(Level.WARNING,e.getMessage());
     }
 
   }
@@ -122,7 +125,7 @@ public class SerialPortCom {
       outputStream.write(message.getBytes());
       outputStream.flush();
     } catch (IOException e) {
-      System.out.println(e.getMessage());
+      logger.log(Level.WARNING,e.getMessage());
     }
   }
 
@@ -135,9 +138,9 @@ public class SerialPortCom {
       reader.close();
       inputStream.close();
       outputStream.close();
-      System.out.println("connection closed");
+      logger.log(Level.INFO,"Connection Closed");
     }catch (IOException e){
-      System.out.println("error in closing "+e.getMessage());
+      logger.log(Level.WARNING,"error in closing "+e.getMessage());
     }
   }
 }
