@@ -46,11 +46,18 @@ public class SerialPortCom {
 
   }
 
+  /**
+   * This method check available port in system
+   */
   public static void checkAvailablePort(){
     list=CommPortIdentifier.getPortIdentifiers();
 
   }
 
+  /**
+   * This method connect the serial port
+   * @param port
+   */
   public static void connect(String port){
 
     serialPortList.forEach(action->{
@@ -75,6 +82,9 @@ public class SerialPortCom {
     }
   }
 
+  /**
+   * This method open the input and output stream for communication
+   */
   public static void openStream(){
     try {
       inputStream = serialPort.getInputStream();
@@ -84,6 +94,9 @@ public class SerialPortCom {
     }
   }
 
+  /**
+   * This method configure the port like adding event listner,flow control mode,port parameter
+   */
   public static void configurePort(){
 
     try{
@@ -101,6 +114,9 @@ public class SerialPortCom {
     }
 
   }
+  /**
+   * This method is used to write data in serial port
+   */
   public static void writeDataToPort(String message){
     try {
       outputStream.write(message.getBytes());
@@ -109,6 +125,10 @@ public class SerialPortCom {
       System.out.println(e.getMessage());
     }
   }
+
+  /**
+   * This method close all open connection
+   */
   public static void close(){
     serialPort.close();
     try{
